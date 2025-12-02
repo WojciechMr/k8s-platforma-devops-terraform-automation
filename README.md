@@ -1,21 +1,17 @@
-<<<<<<< HEAD
-# k8s-platforma-devops-terraform-automation
-Self-service platform for generating and deploying AWS infrastructure with Terraform. Django UI + Jinja2 generates projects, while Kubernetes Jobs run plan/apply using IRSA. GitOps (ArgoCD) + CI/CD + observability (Prometheus/Grafana/Loki). Secure, automated provisioning for dev/stage/prod environments.
-=======
-# Projekt K8s Platforma DevOps
+# K8s DevOps Platform
 
-Repo dla platformy do automatycznego provisioningu infrastruktury w AWS.
+Self-service platform for generating and deploying AWS infrastructure using Terraform.  
+Django UI + Jinja2 generates project templates, while Kubernetes Jobs execute `terraform plan`/`apply` securely using IRSA.  
+GitOps (ArgoCD) + CI/CD pipelines + observability (Prometheus/Grafana/Loki) enable automated, safe provisioning for dev, stage, and prod environments.
 
-## Struktura repo
+## Repository Structure
 
-- platform-app: Django + frontend + generator Jinja2 + Helm charts
-- platform-infra: Terraform do bootstrapa platformy (VPC/EKS/S3/DynamoDB/ECR/iam)
-- tf-modules: Wersjonowane moduły Terraform (vpc, eks, rds, ecr, alb)
+- **platform-app**: Django backend + frontend + Jinja2 Terraform generator + Helm charts  
+- **platform-infra**: Terraform for bootstrapping the platform (VPC, EKS, S3/DynamoDB, ECR, IAM)  
+- **tf-modules**: Versioned Terraform modules (VPC, EKS, RDS, ECR, ALB, etc.)
 
-## Instrukcja startowa
+## Getting Started
 
-1. Skonfiguruj AWS CLI (sandbox/dev account)
-2. Utwórz repo na GitHub i podłącz lokalne
-3. Uruchom terraform init/plan w platform-infra
-EOL
->>>>>>> 7fec287 (infra tree deploy)
+1. Configure AWS CLI (sandbox or dev account)  
+2. Create a GitHub repository and connect your local project  
+3. Run `terraform init` and `terraform plan` in the `platform-infra` directory
