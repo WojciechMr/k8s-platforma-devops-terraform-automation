@@ -6,6 +6,11 @@
 *.tfstate.*
 *.tfvars
 crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
 
 # Django / Python
 # =======================
@@ -53,6 +58,8 @@ build/
 *.tmp
 .DS_Store
 Thumbs.db
+*.sublime-workspace
+*.sublime-project
 
 # =======================
 # Frontend / Build
@@ -70,3 +77,23 @@ poczatek-notatki.txt
 gitnotatka.txt
 etapy-pracy.txt
 architektura.txt
+
+# Kubernetes / Helm
+*.tgz
+*.yaml
+*.lock
+
+# OS
+.DS_Store
+Thumbs.db
+EOL
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+venv/
+.env/
+.env.*
