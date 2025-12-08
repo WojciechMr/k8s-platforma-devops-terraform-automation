@@ -14,70 +14,40 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        environment: [develop, staging, production]
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set environment variables
-      run: |
-        if [[ "${{ matrix.environment }}" == "develop" ]]; then
-          echo "CLUSTER_NAME=eks-platform-dev" >> $GITHUB_ENV
-          echo "K8S_NAMESPACE=dev" >> $GITHUB_ENV
-        elif [[ "${{ matrix.environment }}" == "staging" ]]; then
-          echo "CLUSTER_NAME=eks-platform-staging" >> $GITHUB_ENV
-          echo "K8S_NAMESPACE=staging" >> $GITHUB_ENV
-        else
-          echo "CLUSTER_NAME=eks-platform" >> $GITHUB_ENV
-          echo "K8S_NAMESPACE=default" >> $GITHUB_ENV
-        fi
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Login to Amazon ECR
-      id: ecr-login
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Build Docker image
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::7}-${{ matrix.environment }}
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG $GITHUB_WORKSPACE/platform-app/backend
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-    - name: Build Docker image
-      run: |
-        IMAGE_TAG=${GITHUB_SHA::7}-${{ matrix.environment }}
-        docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./backend
-        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      - name: Push Docker image to ECR
+        run: |
+          docker push $ECR_REPOSITORY:$IMAGE_TAG
 
-    - name: Push Docker image to ECR
-      run: |
-        docker push $ECR_REPOSITORY:$IMAGE_TAG
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name eks-platform --region $AWS_REGION
 
-    - name: Clean up old ECR images
-      run: |
-        aws ecr list-images --repository-name djangoeks --query 'imageIds[:10]' --region $AWS_REGION | \
-        jq -c '.[]' | xargs -n 2 aws ecr batch-delete-image --repository-name djangoeks --region $AWS_REGION --image-ids
-
-    - name: Update kubeconfig
-      run: |
-        aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
-
-    - name: Deploy to EKS via Helm
-      run: |
-        helm upgrade --install djangoeks ./helm-charts \
-          --namespace $K8S_NAMESPACE \
-          --set image.repository=$ECR_REPOSITORY \
-          --set image.tag=$IMAGE_TAG \
-          --create-namespace \
-          --timeout 10m \
-          --wait
-
-    - name: Rollback on failure
-      if: failure()
-      run: |
-        echo "Deployment failed! Rolling back..."
-        helm rollback djangoeks
+      - name: Deploy to EKS via Helm
+        run: |
+          helm upgrade --install djangoeks ./helm-charts \
+            --namespace default \
+            --set image.repository=$ECR_REPOSITORY \
+            --set image.tag=$IMAGE_TAG \
+            --create-namespace \
+            --timeout 10m \
+            --wait
