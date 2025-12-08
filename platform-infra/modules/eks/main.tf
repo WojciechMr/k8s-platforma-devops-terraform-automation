@@ -84,12 +84,12 @@ resource "aws_eks_node_group" "this" {
   node_role_arn   = aws_iam_role.eks_node_group.arn
   subnet_ids      = var.private_subnet_ids
 
+  instance_types = [var.node_instance_type]
+  ami_type       = "BOTTLEROCKET_x86_64"
+
   scaling_config {
     desired_size = var.node_group_desired_capacity
     max_size     = var.node_group_max_size
     min_size     = var.node_group_min_size
   }
-
-  instance_types = [var.node_instance_type]
-  ami_type       = "AL2_x86_64"
 }
