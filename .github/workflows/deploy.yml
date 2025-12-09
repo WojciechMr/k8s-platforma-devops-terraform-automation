@@ -16,6 +16,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       # 1️⃣ Checkout repo
       - name: Checkout code
@@ -60,6 +61,7 @@ jobs:
             --set image.tag="$IMAGE_TAG" \
             --set serviceAccount.name="django-eks-sa" \
             --set ingress.host="example.com" \
-            --set-string secretKey='${{ secrets.DJANGO_SECRET_KEY }}' \
+            --set-string secretKey="${{ secrets.DJANGO_SECRET_KEY }}" \
             --timeout 10m \
-            --wait
+            --wait \
+            --debug
