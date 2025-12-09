@@ -33,33 +33,33 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      # 4️⃣ Build obrazu
+      # 4️⃣ Build Docker image
       - name: Build Docker image
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}-${{ github.ref_name }}
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG $GITHUB_WORKSPACE/platform-app/backend
+          docker build -t "$ECR_REPOSITORY:$IMAGE_TAG" "$GITHUB_WORKSPACE/platform-app/backend"
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-      # 5️⃣ Push obrazu do ECR
+      # 5️⃣ Push Docker image to ECR
       - name: Push Docker image to ECR
         run: |
-          docker push $ECR_REPOSITORY:$IMAGE_TAG
+          docker push "$ECR_REPOSITORY:$IMAGE_TAG"
 
       # 6️⃣ Update kubeconfig do EKS
       - name: Configure kubectl
         run: |
-          aws eks update-kubeconfig --name eks-platform --region $AWS_REGION
+          aws eks update-kubeconfig --name eks-platform --region "$AWS_REGION"
 
       # 7️⃣ Deploy przez Helm
       - name: Deploy to EKS via Helm
         run: |
-          helm upgrade --install $HELM_RELEASE_NAME ./platform-app/helm-charts \
-            --namespace $K8S_NAMESPACE \
+          helm upgrade --install "$HELM_RELEASE_NAME" ./platform-app/helm-charts \
+            --namespace "$K8S_NAMESPACE" \
             --create-namespace \
-            --set image.repository=$ECR_REPOSITORY \
-            --set image.tag=$IMAGE_TAG \
-            --set serviceAccount.name=django-eks-sa \
-            --set ingress.host=example.com \
-            --set secretKey=${{ secrets.DJANGO_SECRET_KEY }} \
+            --set image.repository="$ECR_REPOSITORY" \
+            --set image.tag="$IMAGE_TAG" \
+            --set serviceAccount.name="django-eks-sa" \
+            --set ingress.host="example.com" \
+            --set-string secretKey="${{ secrets.DJANGO_SECRET_KEY }}" \
             --timeout 10m \
             --wait
