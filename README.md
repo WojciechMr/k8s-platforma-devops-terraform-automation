@@ -14,5 +14,5 @@ GitOps (ArgoCD) + CI/CD pipelines + observability (Prometheus/Grafana/Loki) enab
 
 1. Configure AWS CLI (sandbox or dev account)  
 2. Create a GitHub repository and connect your local project  
-3. Run `terraform init` and `terraform plan` in the `platform-infra` directory..
+3. Run `terraform init` and `terraform plan` in the `platform-infra` directory...
 
