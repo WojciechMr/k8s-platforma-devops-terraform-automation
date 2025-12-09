@@ -6,8 +6,8 @@ image:
 
 serviceAccount:
   name: django-eks-sa
-  # iamRoleArn możesz usunąć lub zostawić pusty, nie trzymamy go w repo
-  iamRoleArn: ""
+  create: true        # <-- dodaj to, żeby Helm utworzył SA
+  iamRoleArn: ""      # możesz zostawić pusty
 
 ingress:
   host: example.com
