@@ -80,7 +80,7 @@ architektura.txt
 
 # Kubernetes / Helm
 *.tgz
-*.yaml
+#.yaml
 *.lock
 
 # OS

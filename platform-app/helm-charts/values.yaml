@@ -1,0 +1,16 @@
+replicaCount: 2
+
+image:
+  repository: 998244281811.dkr.ecr.eu-central-1.amazonaws.com/djangoeks
+  tag: v1.0.0
+
+serviceAccount:
+  name: django-eks-sa
+  # iamRoleArn możesz usunąć lub zostawić pusty, nie trzymamy go w repo
+  iamRoleArn: ""
+
+ingress:
+  host: example.com
+
+# SECRET_KEY zostawiamy pusty placeholder, w pipeline podmienimy go na prawdziwy secret
+secretKey: ""
