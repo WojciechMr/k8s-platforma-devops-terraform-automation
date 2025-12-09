@@ -38,7 +38,7 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}-${{ github.ref_name }}
-          docker build -t "$ECR_REPOSITORY:$IMAGE_TAG" "./platform-app/backend"
+          docker build -t "$ECR_REPOSITORY:$IMAGE_TAG" "$GITHUB_WORKSPACE/platform-app/backend"
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       # 5️⃣ Push Docker image do ECR
@@ -51,14 +51,18 @@ jobs:
         run: |
           aws eks update-kubeconfig --name eks-platform --region "$AWS_REGION"
 
-      # 7️⃣ Ustawienie secretu w środowisku
+      # 7️⃣ Debug: sprawdzenie plików w repo
+      - name: Debug workspace
+        run: ls -R $GITHUB_WORKSPACE
+
+      # 8️⃣ Ustawienie secretu w środowisku
       - name: Set Django secret
         run: echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
 
-      # 8️⃣ Deploy do EKS przez Helm
+      # 9️⃣ Deploy do EKS przez Helm
       - name: Deploy to EKS via Helm
         run: |
-          helm upgrade --install "$HELM_RELEASE_NAME" ./platform-app/helm-charts \
+          helm upgrade --install "$HELM_RELEASE_NAME" "$GITHUB_WORKSPACE/platform-app/helm-charts" \
             --namespace "$K8S_NAMESPACE" \
             --create-namespace \
             --set image.repository="$ECR_REPOSITORY" \
