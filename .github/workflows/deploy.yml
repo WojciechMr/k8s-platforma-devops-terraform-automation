@@ -51,18 +51,15 @@ jobs:
         run: |
           aws eks update-kubeconfig --name eks-platform --region "$AWS_REGION"
 
-      # 7️⃣ Debug: sprawdzenie plików w repo
-      - name: Debug workspace
-        run: ls -R $GITHUB_WORKSPACE
-
-      # 8️⃣ Ustawienie secretu w środowisku
+      # 7️⃣ Ustawienie secretu w środowisku
       - name: Set Django secret
         run: echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
 
-      # 9️⃣ Deploy do EKS przez Helm
+      # 8️⃣ Deploy do EKS przez Helm
       - name: Deploy to EKS via Helm
         run: |
-          helm upgrade --install "$HELM_RELEASE_NAME" "$GITHUB_WORKSPACE/platform-app/helm-charts" \
+          CHART_PATH="$GITHUB_WORKSPACE/platform-app/helm-charts"
+          helm upgrade --install "$HELM_RELEASE_NAME" "$CHART_PATH" \
             --namespace "$K8S_NAMESPACE" \
             --create-namespace \
             --set image.repository="$ECR_REPOSITORY" \
