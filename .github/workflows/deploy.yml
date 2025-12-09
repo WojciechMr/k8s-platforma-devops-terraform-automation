@@ -50,16 +50,22 @@ jobs:
         run: |
           aws eks update-kubeconfig --name eks-platform --region "$AWS_REGION"
 
-      # 7️⃣ Deploy przez Helm
+      # 7️⃣ Tworzenie tymczasowego values file z SECRET_KEY
+      - name: Create temporary Helm values file
+        run: |
+          cp ./platform-app/helm-charts/values-prod.yaml values-temp.yaml
+          echo "secretKey: \"${{ secrets.DJANGO_SECRET_KEY }}\"" >> values-temp.yaml
+
+      # 8️⃣ Deploy do EKS przez Helm
       - name: Deploy to EKS via Helm
         run: |
           helm upgrade --install "$HELM_RELEASE_NAME" ./platform-app/helm-charts \
             --namespace "$K8S_NAMESPACE" \
             --create-namespace \
+            -f values-temp.yaml \
             --set image.repository="$ECR_REPOSITORY" \
             --set image.tag="$IMAGE_TAG" \
             --set serviceAccount.name="django-eks-sa" \
             --set ingress.host="example.com" \
-            --set-string secretKey="${{ secrets.DJANGO_SECRET_KEY }}" \
             --timeout 10m \
             --wait
