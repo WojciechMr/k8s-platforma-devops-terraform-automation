@@ -22,7 +22,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Konfiguracja AWS creds
+      # 2️⃣ Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -30,7 +30,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 3️⃣ Logowanie do ECR
+      # 3️⃣ Log in to ECR
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -41,24 +41,25 @@ jobs:
           docker build -t "$ECR_REPOSITORY:$IMAGE_TAG" "$GITHUB_WORKSPACE/platform-app/backend"
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-      # 5️⃣ Push Docker image do ECR
+      # 5️⃣ Push Docker image to ECR
       - name: Push Docker image to ECR
         run: |
           docker push "$ECR_REPOSITORY:$IMAGE_TAG"
 
-      # 6️⃣ Update kubeconfig do EKS
+      # 6️⃣ Configure kubectl for EKS
       - name: Configure kubectl
         run: |
           aws eks update-kubeconfig --name eks-platform --region "$AWS_REGION"
 
-      # 7️⃣ Ustawienie secretu w środowisku
+      # 7️⃣ Set Django secret in environment
       - name: Set Django secret
         run: echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
 
-      # 8️⃣ Deploy do EKS przez Helm
+      # 8️⃣ Deploy to EKS via Helm
       - name: Deploy to EKS via Helm
         run: |
           CHART_PATH="$GITHUB_WORKSPACE/platform-app/helm-charts"
+          ls -la $CHART_PATH      # 🔹 sprawdza czy katalog istnieje
           helm upgrade --install "$HELM_RELEASE_NAME" "$CHART_PATH" \
             --namespace "$K8S_NAMESPACE" \
             --create-namespace \
