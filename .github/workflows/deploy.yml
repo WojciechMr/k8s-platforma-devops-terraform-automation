@@ -51,7 +51,11 @@ jobs:
         run: |
           aws eks update-kubeconfig --name eks-platform --region "$AWS_REGION"
 
-      # 7️⃣ Deploy do EKS przez Helm
+      # 7️⃣ Ustawienie secretu w środowisku
+      - name: Set secret
+        run: echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
+
+      # 8️⃣ Deploy do EKS przez Helm
       - name: Deploy to EKS via Helm
         run: |
           helm upgrade --install "$HELM_RELEASE_NAME" ./platform-app/helm-charts \
@@ -61,7 +65,7 @@ jobs:
             --set image.tag="$IMAGE_TAG" \
             --set serviceAccount.name="django-eks-sa" \
             --set ingress.host="example.com" \
-            --set-string secretKey="${{ secrets.DJANGO_SECRET_KEY }}" \
+            --set-string secretKey="$DJANGO_SECRET_KEY" \
             --timeout 10m \
             --wait \
             --debug
