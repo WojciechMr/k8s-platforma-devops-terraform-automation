@@ -10,7 +10,20 @@ serviceAccount:
   iamRoleArn: ""      # możesz zostawić pusty
 
 ingress:
-  host: example.com
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:123456789012:certificate/xxxx-xxxx-xxxx-xxxx
+  hosts:
+    - host: example.com
+      paths:
+        - path: /
+          pathType: Prefix
 
 # SECRET_KEY zostawiamy pusty placeholder, w pipeline podmienimy go na prawdziwy secret
 secretKey: ""
+
+
+envSecretName: django-secrets
