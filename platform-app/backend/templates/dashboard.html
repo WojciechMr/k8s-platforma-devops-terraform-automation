@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Platforma Terraform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: url('{% static "devops.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+        }
+
+        .dashboard-container {
+            max-width: 900px;
+            margin: 300px auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-tiles {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .tile {
+            display: inline-block;
+            padding: 30px 50px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            background-color: #28a745;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .tile:hover {
+            background-color: #28a745;
+            transform: translateY(-3px);
+        }
+
+        .logout a {
+            color: #28a745;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .logout a:hover {
+            background-color: #28a745;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Welcome, {{ request.user.username }}!</h1>
+        <p>This is your user dashboard.</p>
+
+        <!-- Kafelek tworzenia środowiska -->
+        <div class="dashboard-tiles">
+            <a href="{% url 'create_environment' %}" class="tile">
+                Create an AWS cloud environment
+            </a>
+        </div>
+        <!-- Kafelek tworzenia środowiska -->
+<div class="dashboard-tiles">
+    <a href="{% url 'environment_preview' %}" class="tile">
+        Preview of the generated environment
+    </a>
+</div>
+        <div class="logout">
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+</body>
+</html>

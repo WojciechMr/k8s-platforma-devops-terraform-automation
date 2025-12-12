@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Terraform</title>
+</head>
+<body>
+    <h1>Generate Terraform file</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Project name:</label>
+        <input type="text" name="project_name"><br><br>
+        <label>Region:</label>
+        <input type="text" name="region" value="eu-central-1"><br><br>
+        <button type="submit">Generate</button>
+    </form>
+</body>
+</html>

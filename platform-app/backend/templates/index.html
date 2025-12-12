@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platforma Terraform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* rozciągnięty obrazek tła dla całej sekcji */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{% static "devops.jpg" %}') center 30px / cover no-repeat;
+            z-index: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px 80px;
+            background: url('{% static "terraformhub.png" %}') no-repeat center -600px;
+            background-size: 100% auto;
+            background-repeat: no-repeat;
+            color: #fff;
+            position: relative;
+            z-index: 2;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        a.button {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #28a745;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        a.button:hover {
+            background-color: #218838;
+        }
+
+        section {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 60px auto;
+            background-color: rgba(0, 0, 50, 0.5); /* półprzezroczyste tło tylko pod tekstem */
+            padding: 40px;
+            border-radius: 15px;
+        }
+
+        section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #4dff07;
+        }
+
+        section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        section ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        section ul li {
+            margin-bottom: 8px;
+        }
+
+        footer {
+            position: relative;
+            z-index: 2;
+            margin-top: auto;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0,0,0,0.5);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 2rem; }
+            header p { font-size: 1rem; }
+            section h2 { font-size: 1.5rem; }
+            section p { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Cloud Automation Platform with Terraform</h1>
+        <p>Create your cloud environments without writing Terraform files manually. Select resources, click, and download ready-made files for init, plan, and apply.</p>
+        <div class="buttons">
+            <a href="{% url 'login' %}" class="button">Log in</a>
+            <a href="{% url 'register' %}" class="button">Register</a>
+        </div>
+    </header>
+
+    <section style="
+    max-width: 900px;
+    margin: 60px auto 40px; /* mniejszy dolny margines */
+    background-color: rgba(0, 0, 0, 0.7); /* prawie czarna, półprzezroczysta */
+    padding: 10px;
+    border-radius: 15px;
+">
+        <h2>Platform Description for Developers</h2>
+        <p>Our platform is an advanced tool designed for developers, DevOps engineers, and full-stack teams aiming to fully automate cloud environment provisioning. It enables users to effortlessly generate complete Infrastructure as Code (IaC) using Terraform, ready to execute init, plan, and apply commands.</p>
+
+        <p>The platform allows flexible and granular configuration of environments according to specific needs:</p>
+        <ul>
+            <li><strong>Environment Types:</strong> production, staging, private, or public.</li>
+            <li><strong>Services and Resources:</strong> EC2, Fargate, ECS, EKS (full Kubernetes cluster provisioning on AWS), Lambda, RDS, DynamoDB, and other cloud components.</li>
+            <li><strong>Security and Access Management:</strong> define users, roles, Security Groups, IAM policies, and access controls for each environment.</li>
+            <li><strong>Networking and Infrastructure Configuration:</strong> create VPCs, subnets, security rules, load balancers, and other network components.</li>
+            <li><strong>Full-Stack Development Support:</strong> automated provisioning for backend services (APIs, databases) and frontend applications (web and mobile), including containerized deployments and orchestration in EKS.</li>
+        </ul>
+
+        <p>With a step-by-step dynamic wizard, users can select all environment parameters, and the platform automatically generates a complete set of Terraform files. This eliminates manual scripting errors and allows even users with limited Terraform experience to deploy professional, scalable cloud environments. Advanced users retain full control over configuration and can fine-tune every aspect of the infrastructure.</p>
+
+        <p>This platform accelerates deployment processes, standardizes environments, integrates DevOps and full-stack development best practices, and serves as a strong showcase of skills in infrastructure automation, Kubernetes management, and Terraform-driven cloud projects.</p>
+    </section>
+
+    <footer style="color: #fff;">
+        &copy; 2025 Terraform platform. This project is not affiliated with HashiCorp nor is it an official Terraform product. All logos and names are used for informational and educational purposes.
+    </footer>
+</body>
+</html>

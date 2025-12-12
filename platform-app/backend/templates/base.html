@@ -1,0 +1,16 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Platforma</title></head>
+<body>
+<h1>Test strony</h1>
+<div id="message"></div>
+<script>
+fetch('/api/hello/')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('message').innerText = data.message;
+  });
+</script>
+</body>
+</html>
