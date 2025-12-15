@@ -14,9 +14,9 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/subnets: "subnet-11111111,subnet-22222222,subnet-33333333"
+    alb.ingress.kubernetes.io/subnets: "subnet-01ed06468dc7d029f,subnet-019074d1c2035c9a0,subnet-0f608f80752d072e3"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:123456789012:certificate/xxxx-xxxx-xxxx-xxxx
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-central-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/healthcheck-port: "8000"
     alb.ingress.kubernetes.io/target-type: ip
