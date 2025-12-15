@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout repo
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -30,7 +30,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 3️⃣ Log in to Amazon ECR
+      # 3️⃣ Log in to ECR
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -38,43 +38,46 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}-${{ github.ref_name }}
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG $GITHUB_WORKSPACE/platform-app/backend
+          docker build -t "$ECR_REPOSITORY:$IMAGE_TAG" "$GITHUB_WORKSPACE/platform-app/backend"
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       # 5️⃣ Push Docker image to ECR
-      - name: Push Docker image
+      - name: Push Docker image to ECR
         run: |
-          docker push $ECR_REPOSITORY:$IMAGE_TAG
+          docker push "$ECR_REPOSITORY:$IMAGE_TAG"
 
-      # 6️⃣ Configure kubectl
+      # 6️⃣ Configure kubectl for EKS
       - name: Configure kubectl
         run: |
-          aws eks update-kubeconfig --name eks-platform --region $AWS_REGION
+          aws eks update-kubeconfig --name eks-platform --region "$AWS_REGION"
 
-# 7️⃣ Generate secrets.yaml dynamically
+      # 7️⃣ Generate secrets.yaml dynamically
       - name: Create secrets.yaml
-  run: |
-    echo "envSecretName: django-secrets" > secrets.yaml
-    echo "secretKey: \"${{ secrets.DJANGO_SECRET_KEY }}\"" >> secrets.yaml
-    echo "postgres:" >> secrets.yaml
-    echo "  host: postgresql" >> secrets.yaml
-    echo "  username: \"${{ secrets.DB_USER }}\"" >> secrets.yaml
-    echo "  password: \"${{ secrets.DB_PASSWORD }}\"" >> secrets.yaml
-    echo "  database: \"${{ secrets.DB_NAME }}\"" >> secrets.yaml
-    echo "  port: \"5432\"" >> secrets.yaml
-  
-    - name: Deploy to EKS via Helm
-  run: |
-    CHART_PATH=$GITHUB_WORKSPACE/platform-app/helm-charts
-    helm upgrade --install $HELM_RELEASE_NAME $CHART_PATH \
-      --namespace $K8S_NAMESPACE \
-      --create-namespace \
-      --values $CHART_PATH/values.yaml \
-      --values ./secrets.yaml \
-      --set image.repository=$ECR_REPOSITORY \
-      --set image.tag=$IMAGE_TAG \
-      --set serviceAccount.name="english-platform-dev" \
-      --set ingress.host="example.com" \
-      --timeout 10m \
-      --wait \
-      --debug
+        run: |
+          cat <<EOF > secrets.yaml
+          envSecretName: django-secrets
+          secret_key: ${{ secrets.DJANGO_SECRET_KEY }}
+          postgres:
+            username: ${{ secrets.DB_USER }}
+            password: ${{ secrets.DB_PASSWORD }}
+            database: ${{ secrets.DB_NAME }}
+            host: postgresql
+            port: "5432"
+          EOF
+
+      # 8️⃣ Deploy to EKS via Helm
+      - name: Deploy to EKS via Helm
+        run: |
+          CHART_PATH="$GITHUB_WORKSPACE/platform-app/helm-charts"
+          helm upgrade --install "$HELM_RELEASE_NAME" "$CHART_PATH" \
+            --namespace "$K8S_NAMESPACE" \
+            --create-namespace \
+            --values "$CHART_PATH/values.yaml" \
+            --values "./secrets.yaml" \
+            --set image.repository="$ECR_REPOSITORY" \
+            --set image.tag="$IMAGE_TAG" \
+            --set serviceAccount.name="django-eks-sa" \
+            --set ingress.host="example.com" \
+            --timeout 10m \
+            --wait \
+            --debug
