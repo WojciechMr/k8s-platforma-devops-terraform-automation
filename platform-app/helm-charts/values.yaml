@@ -6,40 +6,34 @@ image:
 
 serviceAccount:
   name: django-eks-sa
-  create: true        # <-- dodaj to, żeby Helm utworzył SA
-  iamRoleArn: ""      # możesz zostawić pusty
+  create: true
+  iamRoleArn: ""
 
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/subnets: "subnet-01ed06468dc7d029f,subnet-019074d1c2035c9a0,subnet-0f608f80752d072e3"
+    alb.ingress.kubernetes.io/subnets: subnet-01ed06468dc7d029f,subnet-019074d1c2035c9a0,subnet-0f608f80752d072e3
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-central-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/healthcheck-port: "8000"
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
   hosts:
     - host: terrautops.org
       paths:
         - path: /
           pathType: Prefix
 
-# SECRET_KEY zostawiamy pusty placeholder, w pipeline podmienimy go na prawdziwy secret
 secretKey: ""
-
-
 envSecretName: django-secrets
 
-replicaCount: 1
-
-image:
-  repository: bitnami/postgresql
-  tag: 16.2.0-debian-11-r0
-
 postgres:
+  image:
+    repository: bitnami/postgresql
+    tag: 16.2.0-debian-11-r0
   username: django
   password: ""
   database: django_db
@@ -47,5 +41,4 @@ postgres:
   persistence:
     enabled: true
     size: 1Gi
-
 envSecretName: django-db-secrets
