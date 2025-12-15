@@ -42,7 +42,8 @@ jobs:
 
       # 5️⃣ Configure kubectl
       - name: Configure kubectl
-        run: aws eks update-kubeconfig --name eks-platform --region $AWS_REGION
+        run: |
+          aws eks update-kubeconfig --name eks-platform --region $AWS_REGION
 
       # 6️⃣ Generate Helm secrets values
       - name: Generate secrets.yaml
@@ -57,8 +58,9 @@ postgres:
   password: "${{ secrets.DB_PASSWORD }}"
   database: "${{ secrets.DB_NAME }}"
   port: "5432"
+EOF
 
-EOF      # 7️⃣ Deploy via Helm
+      # 7️⃣ Deploy via Helm
       - name: Deploy to EKS via Helm
         run: |
           CHART_PATH="platform-app/helm-charts"
