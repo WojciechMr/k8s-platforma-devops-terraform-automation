@@ -2,21 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-djangoeks
-  labels:
-    app: {{ .Release.Name }}-djangoeks
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-djangoeks
+      app: djangoeks
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-djangoeks
+        app: djangoeks
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
-        - name: djangoeks
+        - name: django
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 8000
@@ -46,4 +44,3 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.envSecretName }}
                   key: db_name
-

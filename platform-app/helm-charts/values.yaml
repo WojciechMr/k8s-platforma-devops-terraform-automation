@@ -2,43 +2,34 @@ replicaCount: 2
 
 image:
   repository: 998244281811.dkr.ecr.eu-central-1.amazonaws.com/djangoeks
-  tag: v1.0.0
+  tag: latest
 
 serviceAccount:
-  name: django-eks-sa
-  create: true
-  iamRoleArn: ""
+  name: english-platform-dev
+  create: false
+  iamRoleArn: arn:aws:iam::998244281811:role/english-platform-dev-role
+
+envSecretName: django-secrets
+
+secretKey: ""
+
+db:
+  host: postgresql
+  user: ""
+  password: ""
+  name: ""
+  port: "5432"
 
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/subnets: subnet-01ed06468dc7d029f,subnet-019074d1c2035c9a0,subnet-0f608f80752d072e3
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    alb.ingress.kubernetes.io/healthcheck-path: /
-    alb.ingress.kubernetes.io/healthcheck-port: "8000"
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
   hosts:
     - host: terrautops.org
       paths:
         - path: /
           pathType: Prefix
 
-secretKey: ""
-envSecretName: django-secrets
-
-postgres:
-  image:
-    repository: bitnami/postgresql
-    tag: 16.2.0-debian-11-r0
-  username: django
-  password: ""
-  database: django_db
-  port: 5432
-  persistence:
-    enabled: true
-    size: 1Gi
-envSecretName: django-db-secrets
