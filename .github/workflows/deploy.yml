@@ -2,7 +2,8 @@ name: CI/CD Django EKS
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 env:
   AWS_REGION: eu-central-1
@@ -15,46 +16,60 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # 1️⃣ Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - uses: aws-actions/configure-aws-credentials@v2
+      # 2️⃣ Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: aws-actions/amazon-ecr-login@v1
+      # 3️⃣ Login to Amazon ECR
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build & push image
+      # 4️⃣ Build & push Docker image
+      - name: Build & push Docker image
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG platform-app/backend
           docker push $ECR_REPOSITORY:$IMAGE_TAG
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
+      # 5️⃣ Configure kubectl
       - name: Configure kubectl
         run: aws eks update-kubeconfig --name eks-platform --region $AWS_REGION
 
-      - name: Generate secrets values
+      # 6️⃣ Generate Helm secrets values
+      - name: Generate secrets.yaml
         run: |
-          cat <<EOF > secrets.yaml
+          cat > secrets.yaml <<EOF
 envSecretName: django-secrets
 secretKey: "${{ secrets.DJANGO_SECRET_KEY }}"
 
-db:
+postgres:
   host: postgresql
-  user: "${{ secrets.DB_USER }}"
+  username: "${{ secrets.DB_USER }}"
   password: "${{ secrets.DB_PASSWORD }}"
-  name: "${{ secrets.DB_NAME }}"
+  database: "${{ secrets.DB_NAME }}"
   port: "5432"
-EOF
 
-      - name: Deploy Helm
+EOF      # 7️⃣ Deploy via Helm
+      - name: Deploy to EKS via Helm
         run: |
-          helm upgrade --install $HELM_RELEASE_NAME platform-app/helm-charts \
-            -n $K8S_NAMESPACE \
+          CHART_PATH="platform-app/helm-charts"
+          helm upgrade --install $HELM_RELEASE_NAME $CHART_PATH \
+            --namespace $K8S_NAMESPACE \
             --create-namespace \
-            -f platform-app/helm-charts/values.yaml \
-            -f secrets.yaml \
+            -f $CHART_PATH/values.yaml \
+            -f ./secrets.yaml \
+            --set image.repository=$ECR_REPOSITORY \
             --set image.tag=$IMAGE_TAG \
-            --wait --timeout 10m
+            --set serviceAccount.name="english-platform-dev" \
+            --wait \
+            --timeout 10m \
+            --debug
