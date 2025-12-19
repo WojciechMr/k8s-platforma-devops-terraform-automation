@@ -97,3 +97,11 @@ __pycache__/
 venv/
 .env/
 .env.*
+
+
+# Secrets for local development
+.env
+secrets.yaml
+postgres-service.yaml
+postgres-statefulset.yaml
+alb-iam-policy.json
