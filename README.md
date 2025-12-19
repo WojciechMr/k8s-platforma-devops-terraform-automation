@@ -35,13 +35,13 @@ This platform empowers developers and DevOps teams to **quickly provision isolat
 
 ![Platform UI](docs/workflow.png)
 
+
+## 📁 Repository Structure
 platform-app/ # Django backend + frontend + Jinja2 TF generator + Helm charts
 platform-infra/ # Terraform bootstrapping (VPC, EKS, S3/DynamoDB, ECR, IAM)
 tf-modules/ # Versioned Terraform modules (VPC, EKS, RDS, ALB, etc.)
 
 
-
-## 📁 Repository Structure
 - **platform-app**  
   - Web UI to generate Terraform templates.  
   - Helm charts for deploying services on EKS.  
