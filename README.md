@@ -31,9 +31,11 @@ This platform empowers developers and DevOps teams to **quickly provision isolat
   - Secrets are never pushed to Git; `.gitignore` protects all sensitive files.
 
 ---
+## 🖼 Platform Overview
+
 
 ## 📁 Repository Structure
-
+![Platform UI](docs/workflow.png)
 
 platform-app/ # Django backend + frontend + Jinja2 TF generator + Helm charts
 platform-infra/ # Terraform bootstrapping (VPC, EKS, S3/DynamoDB, ECR, IAM)
