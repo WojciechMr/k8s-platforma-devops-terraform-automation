@@ -1,0 +1,20 @@
+[
+    {
+        "Name": "k8s-default-djangoek-aaef74de22",
+        "Type": "network",
+        "Scheme": "internal",
+        "State": "active"
+    },
+    {
+        "Name": "app-alb-prod",
+        "Type": "application",
+        "Scheme": "internet-facing",
+        "State": "active"
+    },
+    {
+        "Name": "k8s-default-djangoek-e65881dbfa",
+        "Type": "application",
+        "Scheme": "internal",
+        "State": "active"
+    }
+]

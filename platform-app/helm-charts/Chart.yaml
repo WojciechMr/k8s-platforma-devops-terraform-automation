@@ -1,4 +1,4 @@
 apiVersion: v2
-name: djangoeks      # <--- tu nazwa Twojego charta
-version: 0.1.0       # wersja charta
-description: A Helm chart for Django EKS app
+name: djangoeks
+version: 0.1.0
+description: Helm chart for Django application on EKS

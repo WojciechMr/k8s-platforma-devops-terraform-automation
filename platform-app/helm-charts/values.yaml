@@ -1,35 +1,53 @@
-replicaCount: 2
+# values.yaml
+replicaCount: 1
 
 image:
   repository: 998244281811.dkr.ecr.eu-central-1.amazonaws.com/djangoeks
-  tag: latest
+  tag: v1.0.0
 
-serviceAccount:
-  name: english-platform-dev
-  create: false
-  iamRoleArn: arn:aws:iam::998244281811:role/english-platform-dev-role
+# ServiceAccount dla Deploymentu Django
+django:
+  serviceAccountName: default
 
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "250m"
+
+clusterName: eks-platform
+region: eu-central-1
+vpcId: vpc-0fa47db2a47fe40e6
+
+# Sekrety Django
 envSecretName: django-secrets
-
-secretKey: ""
+secretKey: "temporary-django-secret-key"
 
 db:
   host: postgresql
-  user: ""
-  password: ""
-  name: ""
+  user: postgres
+  password: postgres
+  name: postgres
   port: "5432"
+
+service:
+  port: 80
 
 ingress:
   enabled: true
+  certificateArn: "arn:aws:acm:eu-central-1:998244281811:certificate/7bb5bdba-a092-4fea-9485-2dc72f9d5f9a"
+  host: terrautops.org
+  className: alb
   annotations:
-    kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/healthcheck-port: "8000"
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
-  hosts:
-    - host: terrautops.org
-      paths:
-        - path: /
-          pathType: Prefix
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
 
+postgres:
+  persistence:
+    size: 1Gi
