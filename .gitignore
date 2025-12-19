@@ -105,3 +105,4 @@ secrets.yaml
 postgres-service.yaml
 postgres-statefulset.yaml
 alb-iam-policy.json
+iam_policy.json
